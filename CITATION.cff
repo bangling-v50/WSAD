@@ -11,15 +11,15 @@ authors:
     given-names: Jinqiang
   - family-names: Hao
     given-names: Huijuan
+  - family-names: Dong
+    given-names: Xiangjun
   - family-names: Ma
     given-names: Dexin
   - family-names: Kong
     given-names: Hoiio
-  - family-names: Dong
-    given-names: Xiangjun
 version: 1.0.0
-date-released: 2026-04-20
-url: "https://github.com/<我的GitHub用户名>/<仓库名>"
+date-released: 2026-04-22
+url: "https://github.com/bangling-v50/wood-surface-anomaly-detection-dataset-WSAD-"
 abstract: "WSAD is a wood surface anomaly detection dataset for unsupervised evaluation, containing normal training images, normal test images, anomalous test images, and pixel-level masks for anomalous samples."
 keywords:
   - wood surface defect detection
