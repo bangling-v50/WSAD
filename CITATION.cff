@@ -1,0 +1,29 @@
+cff-version: 1.2.0
+message: "If you use the WSAD dataset, please cite this repository and the associated paper."
+title: "WSAD: Wood Surface Anomaly Detection Dataset"
+type: dataset
+authors:
+  - family-names: Wang
+    given-names: Bangling
+  - family-names: Hao
+    given-names: Fengqi
+  - family-names: Bai
+    given-names: Jinqiang
+  - family-names: Hao
+    given-names: Huijuan
+  - family-names: Ma
+    given-names: Dexin
+  - family-names: Kong
+    given-names: Hoiio
+  - family-names: Dong
+    given-names: Xiangjun
+version: 1.0.0
+date-released: 2026-04-20
+url: "https://github.com/<我的GitHub用户名>/<仓库名>"
+abstract: "WSAD is a wood surface anomaly detection dataset for unsupervised evaluation, containing normal training images, normal test images, anomalous test images, and pixel-level masks for anomalous samples."
+keywords:
+  - wood surface defect detection
+  - anomaly detection
+  - dataset
+  - industrial inspection
+license: "CC-BY-NC-4.0"
