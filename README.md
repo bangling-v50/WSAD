@@ -33,6 +33,10 @@ WSAD/
 ├── README.md
 ├── LICENSE
 ├── CITATION.cff
+├── scripts/
+│   ├── dataset_loader.py
+│   ├── eval_metrics.py
+│   └── main.py
 └── data/
     ├── train/
     │   └── good/
