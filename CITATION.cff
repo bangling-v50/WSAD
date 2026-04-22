@@ -19,7 +19,7 @@ authors:
     given-names: Hoiio
 version: 1.0.0
 date-released: 2026-04-22
-url: "https://github.com/bangling-v50/wood-surface-anomaly-detection-dataset-WSAD-"
+url: "https://github.com/bangling-v50/WSAD"
 abstract: "WSAD is a wood surface anomaly detection dataset for unsupervised evaluation, containing normal training images, normal test images, anomalous test images, and pixel-level masks for anomalous samples."
 keywords:
   - wood surface defect detection
