@@ -27,3 +27,38 @@ keywords:
   - dataset
   - industrial inspection
 license: "CC-BY-NC-4.0"
+
+preferred-citation:
+  type: conference-paper
+  title: "CoMemRet: Wood Surface Anomaly Detection Based on Multiview Contrastive Learning and Memory Bank Retrieval"
+  authors:
+    - family-names: Wang
+      given-names: Bangling
+    - family-names: Hao
+      given-names: Fengqi
+    - family-names: Bai
+      given-names: Jinqiang
+    - family-names: Hao
+      given-names: Huijuan
+    - family-names: Dong
+      given-names: Xiangjun
+    - family-names: Ma
+      given-names: Dexin
+    - family-names: Kong
+      given-names: Hoiio
+  collection-title: "ICMR '26: Proceedings of the 2026 International Conference on Multimedia Retrieval"
+  collection-type: proceedings
+  conference:
+    name: "ACM International Conference on Multimedia Retrieval 2026"
+    location: "Amsterdam, Netherlands"
+    date-start: 2026-06-16
+    date-end: 2026-06-19
+  publisher:
+    name: "Association for Computing Machinery"
+  year: 2026
+  month: 6
+  date-published: 2026-06-15
+  start: 2237
+  end: 2245
+  doi: "10.1145/3805622.3810734"
+  url: "https://doi.org/10.1145/3805622.3810734"
