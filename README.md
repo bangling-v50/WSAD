@@ -40,6 +40,7 @@ The training and test sets were formed from the same batch of eucalyptus veneers
 ```text
 WSAD/
 ├── README.md
+├── CHANGELOG.md
 ├── LICENSE
 ├── CITATION.cff
 ├── scripts/
@@ -116,12 +117,23 @@ You can load the dataset according to the directory structure above.
 
 WSAD can be evaluated by combining the released dataloader with image-level anomaly scores and pixel-level anomaly maps predicted by a model.
 
-- `Det`: image-level AUROC
-- `Loc`: pixel-level AUROC on all test images
-- `Loc_Ano`: pixel-level AUROC on anomalous test images only
-- `Avg`: macro average of class-wise pixel-level AUROC
+The extended evaluation reports the following metrics:
+
+- `Det_I_AUROC`: image-level AUROC over the complete test set
+- `Loc_P_AUROC`: pixel-level AUROC over the complete test set
+- `Loc_AU_PRO`: AU-PRO over the complete test set
+- `Ano_P_AUROC`: pixel-level AUROC on anomalous test images only
+- `Ano_AU_PRO`: AU-PRO on anomalous test images only
+- `Macro_P_AUROC`: macro average of category-level pixel AUROC
+- `Macro_AU_PRO`: macro average of category-level AU-PRO
+
+AU-PRO is normalized over the false-positive-rate interval from 0 to 0.3. Ground-truth regions use 8-neighbor connectivity, and the curve is evaluated using 1,000 uniformly spaced score thresholds.
+
+For compatibility with the original conference release, the existing output keys remain available: `Det` is an alias of `Det_I_AUROC`, `Loc` of `Loc_P_AUROC`, `Loc_Ano` of `Ano_P_AUROC`, and `Avg` of `Macro_P_AUROC`.
 
 A minimal evaluation example is provided in `scripts/main.py`. The example includes `model_predict_placeholder`, which generates random scores only to demonstrate the expected prediction interface. It must be replaced with actual model inference before the evaluation results are meaningful.
+
+See `CHANGELOG.md` for changes to the released documentation and evaluation example.
 
 ## Notes
 

@@ -48,10 +48,13 @@ def evaluate_wsad(data_root: str, batch_size: int = 8, num_workers: int = 0):
     Evaluate WSAD with the released dataloader and metrics.
 
     Metrics:
-        - Det:     image-level AUROC
-        - Loc:     pixel-level AUROC on all test images
-        - Loc_Ano: pixel-level AUROC on anomalous test images only
-        - Avg:     macro average of class-wise pixel-level AUROC
+        - Det_I_AUROC: image-level AUROC
+        - Loc_P_AUROC and Loc_AU_PRO: pixel metrics on all test images
+        - Ano_P_AUROC and Ano_AU_PRO: pixel metrics on anomalous images
+        - Macro_P_AUROC and Macro_AU_PRO: category macro averages
+
+    The legacy keys Det, Loc, Loc_Ano, and Avg are retained as aliases for
+    compatibility with the original conference release.
     """
 
     # Build test dataset and dataloader.
@@ -98,29 +101,33 @@ def evaluate_wsad(data_root: str, batch_size: int = 8, num_workers: int = 0):
         anomaly_labels,
     )["auroc"]
 
-    # ------------------------------------------------------------
-    # 2. Loc: pixel-level AUROC on all test images
-    # ------------------------------------------------------------
-    loc = metrics.compute_pixelwise_retrieval_metrics(
+    # Pixel-level metrics on the complete test set (Loc.).
+    loc_p_auroc = metrics.compute_pixelwise_retrieval_metrics(
         segmentations,
         masks_gt,
     )["auroc"]
+    loc_au_pro = metrics.compute_aupro(
+        segmentations,
+        masks_gt,
+    )["aupro"]
 
-    # ------------------------------------------------------------
-    # 3. Loc_Ano: pixel-level AUROC on anomalous test images only
-    # ------------------------------------------------------------
+    # Pixel-level metrics on anomalous test images only (Ano.).
     sel_idxs = [i for i in range(len(masks_gt)) if np.sum(masks_gt[i]) > 0]
+    ano_segmentations = [segmentations[i] for i in sel_idxs]
+    ano_masks = [masks_gt[i] for i in sel_idxs]
 
-    loc_ano = metrics.compute_pixelwise_retrieval_metrics(
-        [segmentations[i] for i in sel_idxs],
-        [masks_gt[i] for i in sel_idxs],
+    ano_p_auroc = metrics.compute_pixelwise_retrieval_metrics(
+        ano_segmentations,
+        ano_masks,
     )["auroc"]
+    ano_au_pro = metrics.compute_aupro(
+        ano_segmentations,
+        ano_masks,
+    )["aupro"]
 
-    # ------------------------------------------------------------
-    # 4. Class-wise pixel-level AUROC
+    # Class-wise pixel-level AUROC and AU-PRO on anomalous images.
     #    Category name is inferred from the parent folder of each test image:
     #    e.g. data/test/CMC/xxx.jpg -> class "CMC"
-    # ------------------------------------------------------------
     image_classes = [os.path.normpath(p).split(os.sep)[-2] for p in image_paths]
 
     classwise_segmentations = defaultdict(list)
@@ -131,21 +138,37 @@ def evaluate_wsad(data_root: str, batch_size: int = 8, num_workers: int = 0):
         classwise_segmentations[cls].append(segmentations[i])
         classwise_masks[cls].append(masks_gt[i])
 
-    classwise_auroc = {}
+    classwise_p_auroc = {}
+    classwise_au_pro = {}
     for cls in sorted(classwise_segmentations.keys()):
-        classwise_auroc[cls] = metrics.compute_pixelwise_retrieval_metrics(
+        classwise_p_auroc[cls] = metrics.compute_pixelwise_retrieval_metrics(
             classwise_segmentations[cls],
             classwise_masks[cls],
         )["auroc"]
+        classwise_au_pro[cls] = metrics.compute_aupro(
+            classwise_segmentations[cls],
+            classwise_masks[cls],
+        )["aupro"]
 
-    avg_classwise_auroc = float(np.mean(list(classwise_auroc.values())))
+    macro_p_auroc = float(np.mean(list(classwise_p_auroc.values())))
+    macro_au_pro = float(np.mean(list(classwise_au_pro.values())))
 
     results = {
+        "Det_I_AUROC": det,
+        "Loc_P_AUROC": loc_p_auroc,
+        "Loc_AU_PRO": loc_au_pro,
+        "Ano_P_AUROC": ano_p_auroc,
+        "Ano_AU_PRO": ano_au_pro,
+        "Macro_P_AUROC": macro_p_auroc,
+        "Macro_AU_PRO": macro_au_pro,
+        "PerClass_Ano_P_AUROC": classwise_p_auroc,
+        "PerClass_Ano_AU_PRO": classwise_au_pro,
+        # Legacy aliases from the original conference release.
         "Det": det,
-        "Loc": loc,
-        "Loc_Ano": loc_ano,
-        "Avg": avg_classwise_auroc,
-        "PerClass_Loc_AUROC": classwise_auroc,
+        "Loc": loc_p_auroc,
+        "Loc_Ano": ano_p_auroc,
+        "Avg": macro_p_auroc,
+        "PerClass_Loc_AUROC": classwise_p_auroc,
     }
 
     return results
@@ -161,11 +184,16 @@ if __name__ == "__main__":
 
     results = evaluate_wsad(data_root=data_root, batch_size=8, num_workers=0)
 
-    print(f"Det     : {results['Det']:.5f}")
-    print(f"Loc     : {results['Loc']:.5f}")
-    print(f"Loc_Ano : {results['Loc_Ano']:.5f}")
-    print(f"Avg     : {results['Avg']:.5f}")
+    print(f"Det. I-AUROC : {results['Det_I_AUROC']:.5f}")
+    print(f"Loc. P-AUROC : {results['Loc_P_AUROC']:.5f}")
+    print(f"Loc. AU-PRO  : {results['Loc_AU_PRO']:.5f}")
+    print(f"Ano. P-AUROC : {results['Ano_P_AUROC']:.5f}")
+    print(f"Ano. AU-PRO  : {results['Ano_AU_PRO']:.5f}")
+    print(f"Macro P-AUROC: {results['Macro_P_AUROC']:.5f}")
+    print(f"Macro AU-PRO : {results['Macro_AU_PRO']:.5f}")
 
-    print("Per-class Loc AUROC:")
-    for cls, value in results["PerClass_Loc_AUROC"].items():
-        print(f"  {cls}: {value:.5f}")
+    print("Per-class metrics:")
+    for cls in results["PerClass_Ano_P_AUROC"]:
+        p_auroc = results["PerClass_Ano_P_AUROC"][cls]
+        au_pro = results["PerClass_Ano_AU_PRO"][cls]
+        print(f"  {cls}: P-AUROC={p_auroc:.5f}, AU-PRO={au_pro:.5f}")
